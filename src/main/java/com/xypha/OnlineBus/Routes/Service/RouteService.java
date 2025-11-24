@@ -1,6 +1,5 @@
 package com.xypha.OnlineBus.Routes.Service;
 
-
 import com.xypha.OnlineBus.Buses.Mapper.RouteMapperUtil;
 import com.xypha.OnlineBus.Routes.Dto.RouteRequest;
 import com.xypha.OnlineBus.Routes.Dto.RouteResponse;
@@ -23,7 +22,7 @@ public class RouteService {
     @Autowired
     private RouteMapper routeMapper;
 
-    public RouteResponse mapToResponse(Route route){
+    public RouteResponse mapToResponse(Route route) {
         RouteResponse res = new RouteResponse();
         res.setId(route.getId());
         res.setSource(route.getSource());
@@ -31,68 +30,76 @@ public class RouteService {
         res.setDestination(route.getDestination());
         res.setDepartureTime(route.getDepartureTime());
         res.setArrivalTime(route.getArrivalTime());
+
+        // Map bus-related fields if present
+        res.setBusId(route.getBusId());
+        res.setBusNumber(route.getBusNumber());
+        res.setBusType(route.getBusType());
+        res.setTotalSeats(route.getTotalSeats());
+        res.setHasAC(route.getHasAC());
+        res.setHasWifi(route.getHasWifi());
+
         return res;
     }
 
-    public RouteResponse addRoute(RouteRequest routeRequest){
+    public RouteResponse addRoute(RouteRequest routeRequest) {
         Route route = new Route();
         route.setSource(routeRequest.getSource());
-        route.setPrice(route.getPrice());
         route.setDestination(routeRequest.getDestination());
+        route.setPrice(routeRequest.getPrice());
         route.setDepartureTime(routeRequest.getDepartureTime());
         route.setArrivalTime(routeRequest.getArrivalTime());
+        route.setBusId(routeRequest.getBusId());
 
-        if (routeMapper.countDuplicateRoute(route) > 0){
+        if (routeMapper.countDuplicateRoute(route) > 0) {
             throw new RuntimeException("This route already exists at the same time");
         }
         routeMapper.insertRoute(route);
         return mapToResponse(route);
     }
 
-    public List<RouteResponse> getAllRoute(){
-        return routeMapper.getAllRoute()
-                .stream()
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
+    public List<RouteResponse> getAllRoute() {
+        return routeMapper.getAllRoute();
     }
 
-    public RouteResponse getRouteById(Long id){
+    public RouteResponse getRouteById(Long id) {
         Route route = routeMapper.getRouteById(id);
-        if (route == null) throw new RuntimeException("Route not found");
+        if (route == null)
+            throw new RuntimeException("Route not found");
         return mapToResponse(route);
     }
 
-    public RouteResponse updateRoute(Long id, RouteRequest request){
+    public RouteResponse updateRoute(Long id, RouteRequest request) {
         Route route = routeMapper.getRouteById(id);
-        if (route == null ) throw new RuntimeException("Route not found");
+        if (route == null)
+            throw new RuntimeException("Route not found");
 
         route.setSource(request.getSource());
         route.setDestination(request.getDestination());
         route.setPrice(request.getPrice());
         route.setDepartureTime(request.getDepartureTime());
         route.setArrivalTime(request.getArrivalTime());
+        route.setBusId(request.getBusId());
 
         routeMapper.updateRoute(route);
         return mapToResponse(route);
     }
 
-    public void deleteRoute(Long id){
+    public void deleteRoute(Long id) {
         routeMapper.deleteRoute(id);
     }
 
+    // Search method
+    // public List<Route> searchRoutes(
+    // String source, String destination,
+    // int page, int size){
+    // int offset = (page - 1) *size;
+    // return routeMapper.searchRoutes(source,destination,size,offset);
+    // }
 
-    //Search method
-//   public List<Route> searchRoutes(
-//           String source, String destination,
-//           int page, int size){
-//        int offset = (page - 1) *size;
-//        return routeMapper.searchRoutes(source,destination,size,offset);
-//   }
-
-    public Map<String , Object>searchRoutes(
+    public Map<String, Object> searchRoutes(
             String source, String destination,
-            int page,  int size
-    ){
+            int page, int size) {
         int offset = page * size;
         List<Route> routes = routeMapper.searchRoutes(source, destination, size, offset);
         int total = routeMapper.countSearchRoutes(source, destination);
@@ -105,7 +112,5 @@ public class RouteService {
         return result;
 
     }
-
-
 
 }

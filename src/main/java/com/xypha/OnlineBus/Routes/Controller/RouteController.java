@@ -67,5 +67,12 @@ public class RouteController {
     }
 
 
+    @GetMapping("/{id}")
+    public ResponseEntity<RouteResponse> getRouteById(
+            @PathVariable Long id
+    ){
+        return ResponseEntity.ok(routeService.getRouteById(id));
+    }
+
 
 }

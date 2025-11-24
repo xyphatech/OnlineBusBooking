@@ -2,6 +2,7 @@ package com.xypha.OnlineBus.Routes.Dto;
 
 import java.time.LocalDateTime;
 
+
 public class RouteResponse {
 
     private Long id;
@@ -13,6 +14,8 @@ public class RouteResponse {
     private LocalDateTime arrivalTime;
 
     //For the bus
+
+    private Long busId;
     private String busNumber;
     private String busType;
     private Integer totalSeats;
@@ -28,17 +31,13 @@ public class RouteResponse {
         this.id = id;
     }
 
-    public String getSource() {
-        return source;
-    }
+
 
     public void setSource(String source) {
         this.source = source;
     }
 
-    public String getDestination() {
-        return destination;
-    }
+
 
     public void setDestination(String destination) {
         this.destination = destination;
@@ -105,5 +104,13 @@ public class RouteResponse {
 
     public void setHasWifi(Boolean hasWifi) {
         this.hasWifi = hasWifi;
+    }
+
+    public Long getBusId() {
+        return busId;
+    }
+
+    public void setBusId(Long busId) {
+        this.busId = busId;
     }
 }

@@ -2,7 +2,7 @@ package com.xypha.OnlineBus.Routes.Entity;
 
 
 import java.time.LocalDateTime;
-
+import java.time.LocalTime;
 
 
 public class Route {
@@ -16,7 +16,13 @@ public class Route {
     private LocalDateTime arrivalTime;
 
 
-
+//    Bus Field
+    private Long busId;
+    private String busNumber;
+    private String busType;
+    private Integer totalSeats;
+    private Boolean hasAC;
+    private Boolean hasWifi;
 
 
 
@@ -68,5 +74,51 @@ public class Route {
         this.arrivalTime = arrivalTime;
     }
 
+    public Long getBusId() {
+        return busId;
+    }
 
+    public void setBusId(Long busId) {
+        this.busId = busId;
+    }
+
+    public String getBusNumber() {
+        return busNumber;
+    }
+
+    public void setBusNumber(String busNumber) {
+        this.busNumber = busNumber;
+    }
+
+    public String getBusType() {
+        return busType;
+    }
+
+    public void setBusType(String busType) {
+        this.busType = busType;
+    }
+
+    public Integer getTotalSeats() {
+        return totalSeats;
+    }
+
+    public void setTotalSeats(Integer totalSeats) {
+        this.totalSeats = totalSeats;
+    }
+
+    public Boolean getHasAC() {
+        return hasAC;
+    }
+
+    public void setHasAC(Boolean hasAC) {
+        this.hasAC = hasAC;
+    }
+
+    public Boolean getHasWifi() {
+        return hasWifi;
+    }
+
+    public void setHasWifi(Boolean hasWifi) {
+        this.hasWifi = hasWifi;
+    }
 }
