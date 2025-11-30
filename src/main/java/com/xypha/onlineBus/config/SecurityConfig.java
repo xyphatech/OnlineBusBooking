@@ -21,6 +21,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import static org.apache.tomcat.util.http.Method.OPTIONS;
+
+
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig {
@@ -59,6 +62,8 @@ public class SecurityConfig {
         httpSecurity
                 .csrf().disable()
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
                         //Public endpoints
                         //Normal user endpoints
                         .requestMatchers("/api/auth/login",
@@ -66,12 +71,37 @@ public class SecurityConfig {
                                 "/api/auth/forgot-password",
                                 "/api/auth/reset-password",
                                 "/api/auth/reset-tokens").permitAll()
-
-
                         //Normal user endpoints
                         .requestMatchers("/api/auth/me").authenticated()
+
+                        //For Staff CRUD
+                        .requestMatchers(HttpMethod.GET,"/api/staff/**").hasAnyAuthority("SUPER_ADMIN","ADMIN")
+                        .requestMatchers(HttpMethod.POST,"/api/staff/**").hasAnyAuthority("SUPER_ADMIN","ADMIN")
+                        .requestMatchers(HttpMethod.PUT,"/api/staff/**").hasAnyAuthority("SUPER_ADMIN","ADMIN")
+                        .requestMatchers(HttpMethod.DELETE,"/api/staff/**").hasAnyAuthority("SUPER_ADMIN","ADMIN")
+
+                        //ROUTE CRUD
+                        .requestMatchers(HttpMethod.GET,    "/api/route/**")
+                        .hasAnyRole("ADMIN", "SUPER_ADMIN")
+                        .requestMatchers(HttpMethod.POST,   "/api/route/**")
+                        .hasAnyRole("ADMIN", "SUPER_ADMIN")
+                        .requestMatchers(HttpMethod.PUT,    "/api/route/**")
+                        .hasAnyRole("ADMIN", "SUPER_ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/route/**")
+                        .hasAnyRole("ADMIN", "SUPER_ADMIN")
+
+                        //For Bus CRUD
+                        .requestMatchers(HttpMethod.GET,"/api/bus/**").permitAll() //view bus
+                        .requestMatchers("/api/bus/upload").hasAuthority("SUPER_ADMIN")
+                        .requestMatchers(HttpMethod.PUT,"/api/bus/**").hasRole("SUPER_ADMIN") //update bus
+                        .requestMatchers(HttpMethod.DELETE,"/api/bus/**").hasRole("SUPER_ADMIN") //delete bus
+
+
+
                         //ADMIN scope(can view users)
                         .requestMatchers(HttpMethod.GET,"/api/users/**").hasAnyRole("ADMIN","SUPER_ADMIN")
+                        .requestMatchers(HttpMethod.POST,"/api/users/**").hasAnyRole("ADMIN","SUPER_ADMIN")
+
 
                         //Super Admin endpoints (full control)
                         .requestMatchers(HttpMethod.PUT, "/api/users/**").authenticated()
@@ -88,8 +118,8 @@ public class SecurityConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry){
                 registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:3000")
-                        .allowedMethods("GET","POST","PUT","DELETE")
+                        .allowedOriginPatterns("http://localhost:3000")
+                        .allowedMethods("GET","POST","PUT","DELETE","OPTIONS")
                         .allowedHeaders("*")
                         .allowCredentials(true);
             }

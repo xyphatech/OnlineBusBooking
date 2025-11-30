@@ -66,7 +66,7 @@ public class AuthController {
             ){
         UserResponse savedUser = userService.createUser(userRequest);
 
-        SimpleGrantedAuthority roleAuthority = new SimpleGrantedAuthority("ROLE_" + savedUser.getRole());
+        SimpleGrantedAuthority roleAuthority = new SimpleGrantedAuthority(savedUser.getRole().name());
         String token = jwtService.generateToken(savedUser.getUsername(),
                 List.of(roleAuthority));
         return ResponseEntity.ok(

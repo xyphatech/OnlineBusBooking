@@ -107,7 +107,7 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities(){
-        return Collections.singleton(()->"ROLE_" + this.role.name());
+        return Collections.singleton(()->this.role.name());
 
     }
     @Override

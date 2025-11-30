@@ -6,11 +6,13 @@ import com.xypha.onlineBus.routes.Dto.RouteResponse;
 import com.xypha.onlineBus.routes.Entity.Route;
 import com.xypha.onlineBus.routes.Mapper.RouteMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class RouteService {
@@ -55,7 +57,9 @@ public class RouteService {
     }
 
     public List<RouteResponse> getAllRoute() {
-        return routeMapper.getAllRoute();
+                return routeMapper.getAllRoute().stream()
+                        .map(route -> mapToResponse(route))
+                        .collect(Collectors.toList());
     }
 
     public RouteResponse getRouteById(Long id) {

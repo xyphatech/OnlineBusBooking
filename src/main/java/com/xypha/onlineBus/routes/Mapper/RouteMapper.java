@@ -15,34 +15,9 @@ public interface RouteMapper {
     @Options(useGeneratedKeys = true, keyProperty = "id")
     void insertRoute(Route route);
 
-    @Select("SELECT r.id AS route_id, r.source, r.destination, r.price, r.departure_time, r.arrival_time, " +
-            "b.id AS bus_id, b.bus_number, b.bus_type, b.total_seats, b.has_ac, b.has_wifi " +
-            "FROM route r " +
-            "LEFT JOIN bus b ON r.bus_id = b.id " +
-            "ORDER BY r.id DESC")
-    @Results({
-            @Result(property = "id", column = "route_id"),
-            @Result(property = "source", column = "source"),
-            @Result(property = "destination", column = "destination"),
-            @Result(property = "price", column = "price"),
-            @Result(property = "departureTime", column = "departure_time"),
-            @Result(property = "arrivalTime", column = "arrival_time"),
-
-            // Bus fields
-            @Result(property = "busId", column = "bus_id"),
-            @Result(property = "busNumber", column = "bus_number"),
-            @Result(property = "busType", column = "bus_type"),
-            @Result(property = "totalSeats", column = "total_seats"),
-            @Result(property = "hasAC", column = "has_ac"),
-            @Result(property = "hasWifi", column = "has_wifi")
-    })
-    List<RouteResponse> getAllRoute();
-
     @Select("SELECT r.id, r.source, r.destination, r.price, r.departure_time, r.arrival_time, " +
-            "b.id AS bus_id,b.bus_number, b.bus_type, b.total_seats, b.has_ac, b.has_wifi " +
-            "FROM route r " +
-            "LEFT JOIN bus b ON r.bus_id = b.id " +
-            "WHERE r.id = #{id}")
+            "b.id AS bus_id, b.bus_number, b.bus_type, b.total_seats, b.has_ac, b.has_wifi " +
+            "FROM route r LEFT JOIN bus b ON r.bus_id = b.id ORDER BY r.id DESC")
     @Results({
             @Result(property = "id", column = "id"),
             @Result(property = "source", column = "source"),
@@ -55,7 +30,26 @@ public interface RouteMapper {
             @Result(property = "busType", column = "bus_type"),
             @Result(property = "totalSeats", column = "total_seats"),
             @Result(property = "hasAC", column = "has_ac"),
-            @Result(property = "hasWifi", column = "has_wifi"),
+            @Result(property = "hasWifi", column = "has_wifi")
+    })
+    List<Route> getAllRoute();
+
+    @Select("SELECT r.id, r.source, r.destination, r.price, r.departure_time, r.arrival_time, " +
+            "b.id AS bus_id, b.bus_number, b.bus_type, b.total_seats, b.has_ac, b.has_wifi " +
+            "FROM route r LEFT JOIN bus b ON r.bus_id = b.id WHERE r.id = #{id}")
+    @Results({
+            @Result(property = "id", column = "id"),
+            @Result(property = "source", column = "source"),
+            @Result(property = "destination", column = "destination"),
+            @Result(property = "price", column = "price"),
+            @Result(property = "departureTime", column = "departure_time"),
+            @Result(property = "arrivalTime", column = "arrival_time"),
+            @Result(property = "busId", column = "bus_id"),
+            @Result(property = "busNumber", column = "bus_number"),
+            @Result(property = "busType", column = "bus_type"),
+            @Result(property = "totalSeats", column = "total_seats"),
+            @Result(property = "hasAC", column = "has_ac"),
+            @Result(property = "hasWifi", column = "has_wifi")
     })
     Route getRouteById(Long id);
 

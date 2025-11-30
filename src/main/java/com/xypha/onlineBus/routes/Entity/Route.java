@@ -15,15 +15,13 @@ public class Route {
     private LocalDateTime arrivalTime;
 
 
-//    Bus Field
+    //    Bus Field
     private Long busId;
     private String busNumber;
     private String busType;
     private Integer totalSeats;
     private Boolean hasAC;
     private Boolean hasWifi;
-
-
 
     public Long getId() {
         return id;
@@ -37,14 +35,6 @@ public class Route {
         return source;
     }
 
-    public Double getPrice() {
-        return price;
-    }
-
-    public void setPrice(Double price) {
-        this.price = price;
-    }
-
     public void setSource(String source) {
         this.source = source;
     }
@@ -55,6 +45,14 @@ public class Route {
 
     public void setDestination(String destination) {
         this.destination = destination;
+    }
+
+    public Double getPrice() {
+        return price;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
     }
 
     public LocalDateTime getDepartureTime() {

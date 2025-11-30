@@ -24,12 +24,12 @@ public class JwtService {
 
         String roles = authorities != null
                 ? authorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining(","))
-                : "ROLE_USER";  //default role if no authorities provided
+                : "USER";  //default role if no authorities provided
 
 
         return Jwts.builder()
                 .setSubject(username)
-                .claim("roles", roles)
+                .claim("authorities", roles)
                 .setIssuedAt(new Date())
                 .setExpiration(Date.from(Instant.now().plusMillis(EXPIRATION_MS)))
                 .signWith(KEY, SignatureAlgorithm.HS256)

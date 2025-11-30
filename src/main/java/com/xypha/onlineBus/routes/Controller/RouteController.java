@@ -3,6 +3,8 @@ package com.xypha.onlineBus.routes.Controller;
 
 import com.xypha.onlineBus.routes.Dto.RouteRequest;
 import com.xypha.onlineBus.routes.Dto.RouteResponse;
+import com.xypha.onlineBus.routes.Entity.Route;
+import com.xypha.onlineBus.routes.Mapper.RouteMapper;
 import com.xypha.onlineBus.routes.Service.RouteService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,12 +17,14 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/route")
-@CrossOrigin("*")
+
 public class RouteController {
 
     @Autowired
     private RouteService routeService;
 
+    @Autowired
+    private RouteMapper routeMapper;
 
 
 
@@ -32,7 +36,8 @@ public class RouteController {
 
     @GetMapping
     public ResponseEntity <List<RouteResponse>> getAllRoutes(){
-        return ResponseEntity.ok(routeService.getAllRoute());
+        List<RouteResponse> routes = routeService.getAllRoute();
+        return ResponseEntity.ok(routes);
     }
 
     @GetMapping("/search")
@@ -68,7 +73,8 @@ public class RouteController {
     public ResponseEntity<RouteResponse> getRouteById(
             @PathVariable Long id
     ){
-        return ResponseEntity.ok(routeService.getRouteById(id));
+        RouteResponse route = routeService.getRouteById(id);
+        return ResponseEntity.ok(route);
     }
 
 

@@ -52,6 +52,17 @@ public class StaffService {
         Driver driver = driverMapper.getDriverById(id);
         if (driver == null)
             throw new RuntimeException("Driver not found with id: " + id);
+
+        if (request.getEmployeeId() != null &&
+            !request.getEmployeeId().trim().isEmpty() &&
+            !request.getEmployeeId().equals(driver.getEmployeeId())) {
+
+            int count = driverMapper.countDriverUpdate(request.getEmployeeId(), id);
+            if (count > 0){
+                throw new RuntimeException("Employee ID already exists: " + request.getEmployeeId());
+            }
+        }
+
         driver.setName(request.getName());
         driver.setPhoneNumber(request.getPhoneNumber());
         driver.setLicenseNumber(request.getLicenseNumber());
@@ -64,15 +75,34 @@ public class StaffService {
     }
 
 
+    public void validateEmployeeIdDriver(String employeeId){
+        int count = driverMapper.countEmployeeId(employeeId);
+        if (count > 0){
+            throw new RuntimeException("Employee ID already exists: " + employeeId);
+        }
+    }
+
+    public void validateEmployeeIdAssistant(String employeeId){
+        int count = assistantMapper.countEmployeeId(employeeId);
+        if (count > 0){
+            throw new RuntimeException("Employee ID already exists: " + employeeId);
+        }
+    }
 
 
     //Assistant CRUD
     public AssistantResponse addAssistant(AssistantRequest assistantRequest){
+        //Validate to assistant employeeId is unique
+        validateEmployeeIdAssistant(assistantRequest.getEmployeeId());
+
         Assistant assistant = mapAssistantToEntity(assistantRequest);
         assistant.setName(assistantRequest.getName());
         assistant.setPhoneNumber(assistantRequest.getPhoneNumber());
         assistant.setEmployeeId(assistantRequest.getEmployeeId());
         assistantMapper.insertAssistant(assistant);
+
+
+
         return mapAssistantToResponse(assistant);
     }
     public AssistantResponse getAssistantById(Long id){
@@ -94,7 +124,16 @@ public class StaffService {
         Assistant assistant = assistantMapper.getAssistantById(id);
         if (assistant == null)
             throw new RuntimeException("Assistant not found with id: " + id);
-        assistant.setName(request.getName());
+        if (request.getEmployeeId() != null &&
+            !request.getEmployeeId().trim().isEmpty() &&
+            !request.getEmployeeId().equals(assistant.getEmployeeId())) {
+
+            int count = assistantMapper.countAssistantUpdate(request.getEmployeeId(), id);
+            if (count > 0){
+                throw new RuntimeException("Employee ID already exists: " + request.getEmployeeId());
+            }
+        }
+
         assistant.setPhoneNumber(request.getPhoneNumber());
         assistant.setEmployeeId(request.getEmployeeId());
         assistantMapper.updateAssistant(assistant);

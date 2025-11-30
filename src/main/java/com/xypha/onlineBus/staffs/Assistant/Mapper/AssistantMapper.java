@@ -48,4 +48,16 @@ public interface AssistantMapper {
 
     @Delete("DELETE FROM assistant WHERE id = #{id}")
     void deleteAssistant (Long id);
+
+    @Select("SELECT COUNT(*) FROM assistant WHERE employee_id = #{employeeId}")
+    int countEmployeeId(String employeeId);
+
+    @Select("""
+           SELECT COUNT(*) FROM assistant WHERE employee_id = #{employeeId} AND id != #{id}
+            """)
+    int countAssistantUpdate (@Param("employeeId") String employeeId,
+                             @Param("id") Long id);
+
+
+
 }

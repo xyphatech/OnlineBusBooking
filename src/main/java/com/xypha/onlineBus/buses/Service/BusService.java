@@ -52,6 +52,8 @@ public class BusService {
                     throw new RuntimeException("Assistant is already assigned to another bus today");
                 }
             }
+
+
         }
 
         Bus bus = new Bus();

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+@CrossOrigin ("*")
 @RestController
 @RequestMapping ("/api/users")
 public class UserController {
@@ -62,7 +63,7 @@ public class UserController {
 //        System.out.println("Authorities: "+userDetails.getAuthorities() );
 
         if (!userDetails.getId().equals(id) &&
-                !userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_SUPER_ADMIN"))) {
+                !userDetails.getAuthorities().contains(new SimpleGrantedAuthority("SUPER_ADMIN"))) {
             return ResponseEntity.status(403).body(null);
         }
 
@@ -71,7 +72,6 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('SUPER_ADMIN')")
     public ResponseEntity<Map<String, String>> deleteUser(
             @PathVariable Long id) {
        userService.deleteUser(id);

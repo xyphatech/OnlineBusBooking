@@ -1,5 +1,6 @@
 package com.xypha.onlineBus.buses.Controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xypha.onlineBus.buses.Dto.BusRequest;
 import com.xypha.onlineBus.buses.Dto.BusResponse;
 import com.xypha.onlineBus.buses.Service.BusService;
@@ -18,15 +19,17 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@CrossOrigin("*")
 @RequestMapping("/api/bus")
 public class BusController {
 
 
     private final BusService busService;
 
-    public BusController(BusService busService) {
+    private final ObjectMapper objectMapper;
+
+    public BusController(BusService busService, ObjectMapper objectMapper) {
         this.busService = busService;
+        this.objectMapper = objectMapper;
     }
 
     // Pagination (MyBatis version)
@@ -87,14 +90,14 @@ public class BusController {
     // Upload image + create Bus
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<BusResponse> uploadBus(
-            @ModelAttribute BusRequest busRequest,
-            @RequestPart("image") MultipartFile file
+            @RequestPart(value = "busRequestString", required = true) String busRequestString,
+            @RequestPart(value = "image", required = false) MultipartFile file
     ) throws IOException {
 
-        if (file.isEmpty()) {
-            return ResponseEntity.badRequest().body(null);
-        }
-
+//        if (file.isEmpty()) {
+//            return ResponseEntity.badRequest().body(null);
+//        }
+        BusRequest busRequest = objectMapper.readValue(busRequestString, BusRequest.class);
         if (!file.getContentType().toLowerCase().startsWith("image")) {
             return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(null);
         }

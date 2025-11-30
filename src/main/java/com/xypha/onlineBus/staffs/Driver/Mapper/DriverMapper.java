@@ -51,5 +51,14 @@ public interface DriverMapper {
     @Delete("DELETE FROM driver WHERE id = #{id}")
     void deleteDriver(Long id);
 
+    @Select("SELECT COUNT(*) FROM driver WHERE employee_id = #{employeeId}")
+    int countEmployeeId(String employeeId);
+
+
+    @Select("""
+            SELECT COUNT(*) FROM driver WHERE employee_id = #{employeeId} AND id != #{id}
+            """)
+    int countDriverUpdate (@Param("employeeId") String employeeId,
+                           @Param("id") Long id);
 
 }
