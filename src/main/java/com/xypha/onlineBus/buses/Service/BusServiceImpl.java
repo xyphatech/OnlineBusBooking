@@ -4,6 +4,10 @@ import com.xypha.onlineBus.buses.Dto.BusRequest;
 import com.xypha.onlineBus.buses.Dto.BusResponse;
 import com.xypha.onlineBus.buses.Entity.Bus;
 import com.xypha.onlineBus.buses.Mapper.BusMapper;
+import com.xypha.onlineBus.staffs.Assistant.Dto.AssistantResponse;
+import com.xypha.onlineBus.staffs.Assistant.Mapper.AssistantMapper;
+import com.xypha.onlineBus.staffs.Driver.Dto.DriverResponse;
+import com.xypha.onlineBus.staffs.Driver.Mapper.DriverMapper;
 import com.xypha.onlineBus.staffs.Service.StaffService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,13 +17,22 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class BusService {
+public class BusServiceImpl implements BusService {
 
-    @Autowired
-    private BusMapper busMapper;
+  private final BusMapper busMapper;
+  private final DriverMapper driverMapper;
+  private final AssistantMapper assistantMapper;
+  private final StaffService staffService;
 
-    @Autowired
-    StaffService staffService;
+
+
+  public BusServiceImpl(BusMapper busMapper, DriverMapper driverMapper, AssistantMapper assistantMapper, StaffService staffService) {
+        this.busMapper = busMapper;
+        this.driverMapper = driverMapper;
+        this.assistantMapper = assistantMapper;
+        this.staffService = staffService;
+    }
+
 
 
     //Pagination Part
@@ -53,7 +66,6 @@ public class BusService {
                 }
             }
 
-
         }
 
         Bus bus = new Bus();
@@ -78,7 +90,7 @@ public class BusService {
     }
 
     public List<BusResponse> getAllBuses(){
-        return busMapper.getAllBuses().stream().map(this::mapToResponse).collect(Collectors.toList());
+        return busMapper.findAllBusResponse();
     }
 
     public BusResponse updateBus(Long id, BusRequest busRequest){
@@ -115,20 +127,16 @@ public class BusService {
         res.setHasWifi(bus.getHasWifi());
         res.setImgUrl(bus.getImgUrl());
         res.setDescription(bus.getDescription());
-        res.setDriverId(bus.getDriverId());
-        res.setAssistantId(bus.getAssistantId());
         res.setCreatedAt(bus.getCreatedAt());
         res.setUpdatedAt(bus.getUpdatedAt());
 
         if (bus.getDriverId() != null ){
-            res.setDriverName(staffService.getDriverById (bus.getDriverId()).getName());
-            res.setDriverId(staffService.getDriverById(bus.getDriverId()).getId());
-            res.setDriverEmployeeId(staffService.getDriverById(bus.getDriverId()).getEmployeeId());
+            DriverResponse driver = staffService.getDriverById(bus.getDriverId());
+            res.setDriver(driver);
         }
         if (bus.getAssistantId() != null){
-            res.setAssistantName(staffService.getAssistantById(bus.getAssistantId()).getName());
-            res.setAssistantId(staffService.getAssistantById(bus.getAssistantId()).getId());
-            res.setAssistantEmployeeId(staffService.getAssistantById(bus.getAssistantId()).getEmployeeId());
+            AssistantResponse assistant = staffService.getAssistantById(bus.getAssistantId());
+            res.setAssistant(assistant);
         }
         return res;
     }

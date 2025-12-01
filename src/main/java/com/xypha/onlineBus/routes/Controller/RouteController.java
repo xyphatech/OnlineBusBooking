@@ -3,9 +3,8 @@ package com.xypha.onlineBus.routes.Controller;
 
 import com.xypha.onlineBus.routes.Dto.RouteRequest;
 import com.xypha.onlineBus.routes.Dto.RouteResponse;
-import com.xypha.onlineBus.routes.Entity.Route;
 import com.xypha.onlineBus.routes.Mapper.RouteMapper;
-import com.xypha.onlineBus.routes.Service.RouteService;
+import com.xypha.onlineBus.routes.Service.RouteServiceImpl;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +20,7 @@ import java.util.Map;
 public class RouteController {
 
     @Autowired
-    private RouteService routeService;
+    private RouteServiceImpl routeService;
 
     @Autowired
     private RouteMapper routeMapper;

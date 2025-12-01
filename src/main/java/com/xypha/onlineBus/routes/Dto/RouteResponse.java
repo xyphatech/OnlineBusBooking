@@ -1,5 +1,7 @@
 package com.xypha.onlineBus.routes.Dto;
 
+import com.xypha.onlineBus.buses.Dto.BusResponse;
+
 import java.time.LocalDateTime;
 
 
@@ -13,14 +15,11 @@ public class RouteResponse {
     private LocalDateTime departureTime;
     private LocalDateTime arrivalTime;
 
+    private BusResponse bus;
     //For the bus
 
-    private Long busId;
-    private String busNumber;
-    private String busType;
-    private Integer totalSeats;
-    private Boolean hasAC;
-    private Boolean hasWifi;
+
+
 
 
     public Long getId() {
@@ -66,51 +65,19 @@ public class RouteResponse {
         this.arrivalTime = arrivalTime;
     }
 
-    public String getBusNumber() {
-        return busNumber;
+    public String getSource() {
+        return source;
     }
 
-    public void setBusNumber(String busNumber) {
-        this.busNumber = busNumber;
+    public String getDestination() {
+        return destination;
     }
 
-    public String getBusType() {
-        return busType;
+    public BusResponse getBus() {
+        return bus;
     }
 
-    public void setBusType(String busType) {
-        this.busType = busType;
-    }
-
-    public Integer getTotalSeats() {
-        return totalSeats;
-    }
-
-    public void setTotalSeats(Integer totalSeats) {
-        this.totalSeats = totalSeats;
-    }
-
-    public Boolean getHasAC() {
-        return hasAC;
-    }
-
-    public void setHasAC(Boolean hasAC) {
-        this.hasAC = hasAC;
-    }
-
-    public Boolean getHasWifi() {
-        return hasWifi;
-    }
-
-    public void setHasWifi(Boolean hasWifi) {
-        this.hasWifi = hasWifi;
-    }
-
-    public Long getBusId() {
-        return busId;
-    }
-
-    public void setBusId(Long busId) {
-        this.busId = busId;
+    public void setBus(BusResponse bus) {
+        this.bus = bus;
     }
 }

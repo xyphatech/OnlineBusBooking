@@ -1,5 +1,9 @@
 package com.xypha.onlineBus.buses.Dto;
 
+import com.xypha.onlineBus.routes.Dto.RouteResponse;
+import com.xypha.onlineBus.staffs.Assistant.Dto.AssistantResponse;
+import com.xypha.onlineBus.staffs.Driver.Dto.DriverResponse;
+
 import java.time.LocalDateTime;
 
 public class BusResponse {
@@ -19,47 +23,13 @@ public class BusResponse {
         private LocalDateTime updatedAt;
 
 
-        //For driver and assistant
-        private Long driverId;
-        private String driverName;
-        private String driverEmployeeId;
 
-        private Long assistantId;
-        private String assistantName;
-        private String assistantEmployeeId;
+        private AssistantResponse assistant;
+        private DriverResponse driver;
 
 
-    public String getDriverName() {
-        return driverName;
-    }
 
-    public void setDriverName(String driverName) {
-        this.driverName = driverName;
-    }
 
-    public String getDriverEmployeeId() {
-        return driverEmployeeId;
-    }
-
-    public void setDriverEmployeeId(String driverEmployeeId) {
-        this.driverEmployeeId = driverEmployeeId;
-    }
-
-    public String getAssistantName() {
-        return assistantName;
-    }
-
-    public void setAssistantName(String assistantName) {
-        this.assistantName = assistantName;
-    }
-
-    public String getAssistantEmployeeId() {
-        return assistantEmployeeId;
-    }
-
-    public void setAssistantEmployeeId(String assistantEmployeeId) {
-        this.assistantEmployeeId = assistantEmployeeId;
-    }
 
     public Long getId() {
         return id;
@@ -145,20 +115,21 @@ public class BusResponse {
         return busType;
     }
 
-    public Long getDriverId() {
-        return driverId;
+
+    public AssistantResponse getAssistant() {
+        return assistant;
     }
 
-    public void setDriverId(Long driverId) {
-        this.driverId = driverId;
+    public void setAssistant(AssistantResponse assistant) {
+        this.assistant = assistant;
     }
 
-    public Long getAssistantId() {
-        return assistantId;
+    public DriverResponse getDriver() {
+        return driver;
     }
 
-    public void setAssistantId(Long assistantId) {
-        this.assistantId = assistantId;
+    public void setDriver(DriverResponse driver) {
+        this.driver = driver;
     }
 }
 

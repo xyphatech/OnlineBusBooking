@@ -63,6 +63,7 @@ public class SecurityConfig {
                 .csrf().disable()
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers("/").permitAll()
 
                         //Public endpoints
                         //Normal user endpoints
@@ -74,6 +75,8 @@ public class SecurityConfig {
                         //Normal user endpoints
                         .requestMatchers("/api/auth/me").authenticated()
 
+
+
                         //For Staff CRUD
                         .requestMatchers(HttpMethod.GET,"/api/staff/**").hasAnyAuthority("SUPER_ADMIN","ADMIN")
                         .requestMatchers(HttpMethod.POST,"/api/staff/**").hasAnyAuthority("SUPER_ADMIN","ADMIN")
@@ -82,19 +85,19 @@ public class SecurityConfig {
 
                         //ROUTE CRUD
                         .requestMatchers(HttpMethod.GET,    "/api/route/**")
-                        .hasAnyRole("ADMIN", "SUPER_ADMIN")
+                        .hasAnyAuthority("ADMIN", "SUPER_ADMIN")
                         .requestMatchers(HttpMethod.POST,   "/api/route/**")
-                        .hasAnyRole("ADMIN", "SUPER_ADMIN")
+                        .hasAnyAuthority("ADMIN", "SUPER_ADMIN")
                         .requestMatchers(HttpMethod.PUT,    "/api/route/**")
-                        .hasAnyRole("ADMIN", "SUPER_ADMIN")
+                        .hasAnyAuthority("ADMIN", "SUPER_ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/route/**")
-                        .hasAnyRole("ADMIN", "SUPER_ADMIN")
+                        .hasAnyAuthority("ADMIN", "SUPER_ADMIN")
 
                         //For Bus CRUD
                         .requestMatchers(HttpMethod.GET,"/api/bus/**").permitAll() //view bus
                         .requestMatchers("/api/bus/upload").hasAuthority("SUPER_ADMIN")
-                        .requestMatchers(HttpMethod.PUT,"/api/bus/**").hasRole("SUPER_ADMIN") //update bus
-                        .requestMatchers(HttpMethod.DELETE,"/api/bus/**").hasRole("SUPER_ADMIN") //delete bus
+                        .requestMatchers(HttpMethod.PUT,"/api/bus/**").hasAuthority("SUPER_ADMIN") //update bus
+                        .requestMatchers(HttpMethod.DELETE,"/api/bus/**").hasAuthority("SUPER_ADMIN") //delete bus
 
 
 

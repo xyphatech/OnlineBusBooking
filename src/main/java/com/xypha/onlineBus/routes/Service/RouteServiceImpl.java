@@ -1,12 +1,14 @@
 package com.xypha.onlineBus.routes.Service;
 
+import com.xypha.onlineBus.buses.Dto.BusResponse;
+import com.xypha.onlineBus.buses.Entity.Bus;
+import com.xypha.onlineBus.buses.Mapper.BusMapper;
 import com.xypha.onlineBus.routes.Mapper.RouteMapperUtil;
 import com.xypha.onlineBus.routes.Dto.RouteRequest;
 import com.xypha.onlineBus.routes.Dto.RouteResponse;
 import com.xypha.onlineBus.routes.Entity.Route;
 import com.xypha.onlineBus.routes.Mapper.RouteMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import com.xypha.onlineBus.staffs.Service.StaffService;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -15,10 +17,18 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
-public class RouteService {
+public class RouteServiceImpl {
 
-    @Autowired
-    private RouteMapper routeMapper;
+    private final RouteMapper routeMapper;
+    private final BusMapper busMapper;
+    private final StaffService staffService;
+
+
+    public RouteServiceImpl(RouteMapper routeMapper, BusMapper busMapper, StaffService staffService) {
+        this.routeMapper = routeMapper;
+        this.busMapper = busMapper;
+        this.staffService = staffService;
+    }
 
     public RouteResponse mapToResponse(Route route) {
         RouteResponse res = new RouteResponse();
@@ -30,12 +40,32 @@ public class RouteService {
         res.setArrivalTime(route.getArrivalTime());
 
         // Map bus-related fields if present
-        res.setBusId(route.getBusId());
-        res.setBusNumber(route.getBusNumber());
-        res.setBusType(route.getBusType());
-        res.setTotalSeats(route.getTotalSeats());
-        res.setHasAC(route.getHasAC());
-        res.setHasWifi(route.getHasWifi());
+        if (route.getBusId() != null){
+            Bus bus = busMapper.getBusById(route.getBusId());
+            if (bus != null){
+                BusResponse busResponse = new BusResponse();
+                busResponse.setId(bus.getId());
+                busResponse.setBusNumber(bus.getBusNumber());
+                busResponse.setBusType(bus.getBusType());
+                busResponse.setTotalSeats(bus.getTotalSeats());
+                busResponse.setHasAC(bus.getHasAC());
+                busResponse.setHasWifi(bus.getHasWifi());
+                busResponse.setImgUrl(bus.getImgUrl());
+                busResponse.setDescription(bus.getDescription());
+                busResponse.setCreatedAt(bus.getCreatedAt());
+                busResponse.setUpdatedAt(bus.getUpdatedAt());
+
+                if (bus.getDriverId() != null )
+                    busResponse.setDriver(
+                            staffService.getDriverById(bus.getDriverId())
+                    );
+                if (bus.getAssistantId() != null)
+                    busResponse.setAssistant(
+                            staffService.getAssistantById(bus.getAssistantId())
+                    );
+                res.setBus(busResponse);
+            }
+        }
 
         return res;
     }
@@ -100,7 +130,7 @@ public class RouteService {
     public Map<String, Object> searchRoutes(
             String source, String destination,
             int page, int size) {
-        int offset = page * size;
+        int offset = (page - 1) * size;
         List<Route> routes = routeMapper.searchRoutes(source, destination, size, offset);
         int total = routeMapper.countSearchRoutes(source, destination);
 

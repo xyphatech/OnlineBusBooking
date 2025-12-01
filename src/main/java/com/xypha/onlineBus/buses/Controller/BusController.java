@@ -3,17 +3,20 @@ package com.xypha.onlineBus.buses.Controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xypha.onlineBus.buses.Dto.BusRequest;
 import com.xypha.onlineBus.buses.Dto.BusResponse;
-import com.xypha.onlineBus.buses.Service.BusService;
+import com.xypha.onlineBus.buses.Service.BusServiceImpl;
+import com.xypha.onlineBus.multipart.MultipartInputStreamFileResource;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.*;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,11 +26,11 @@ import java.util.Map;
 public class BusController {
 
 
-    private final BusService busService;
+    private final BusServiceImpl busService;
 
     private final ObjectMapper objectMapper;
 
-    public BusController(BusService busService, ObjectMapper objectMapper) {
+    public BusController(BusServiceImpl busService, ObjectMapper objectMapper) {
         this.busService = busService;
         this.objectMapper = objectMapper;
     }
@@ -102,18 +105,48 @@ public class BusController {
             return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(null);
         }
 
-        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+        //////////////////////////////////////////////saving in local
+//        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+//        Path uploadPath = Paths.get("C:\\Users\\Leon\\Desktop\\uploads");
+//        if (!Files.exists(uploadPath)) {
+//            Files.createDirectories(uploadPath);
+//        }
+//        Path filePath = uploadPath.resolve(fileName);
+//        Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
-        Path uploadPath = Paths.get("C:\\Users\\Leon\\Desktop\\uploads");
-        if (!Files.exists(uploadPath)) {
-            Files.createDirectories(uploadPath);
-        }
 
-        Path filePath = uploadPath.resolve(fileName);
-        Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+///     /////////////////////////////Store with String type////////////////////////////////////
+//        byte[] bytes = file.getBytes();
+//        String base64Image = Base64.getEncoder().encodeToString(bytes);
+//        busRequest.setImgUrl(base64Image);
 
-        busRequest.setImgUrl(fileName);
 
+
+
+        ////////////////////////////////  Store in cloud ////////////////////////////////
+        ////saving in cloud imagekit
+        String privateKey= "private_ju7N56tZcDf1kY6Ws8QnQTd/bvg=";
+        String uploadUrl = "https://upload.imagekit.io/api/v1/files/upload";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBasicAuth( privateKey, "");
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        body.add("file", new MultipartInputStreamFileResource(file.getOriginalFilename(), file.getInputStream()));
+        body.add("fileName", file.getOriginalFilename());
+        body.add("folder","/bus-images");
+
+        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<String> response = restTemplate.postForEntity(uploadUrl, requestEntity, String.class);
+
+        //Parse Json To get URL
+        ObjectMapper mapper = new ObjectMapper();
+        String imgUrl = mapper.readTree(response.getBody()).get("url").asText();
+
+        busRequest.setImgUrl(imgUrl);
         BusResponse savedBus = busService.addBus(busRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedBus);
     }

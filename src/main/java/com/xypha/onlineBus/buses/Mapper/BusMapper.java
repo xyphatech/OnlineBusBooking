@@ -1,5 +1,6 @@
 package com.xypha.onlineBus.buses.Mapper;
 
+import com.xypha.onlineBus.buses.Dto.BusResponse;
 import com.xypha.onlineBus.buses.Entity.Bus;
 import org.apache.ibatis.annotations.*;
 
@@ -14,26 +15,26 @@ public interface BusMapper {
     @Options(useGeneratedKeys = true, keyProperty = "id")
     void insertBus(Bus bus);
 
-    @Select("SELECT * FROM bus")
-    @Results({
-            @Result(property="id", column="id"),
-            @Result(property="busNumber", column="bus_number"),
-            @Result(property="busType", column="bus_type"),
-            @Result(property="totalSeats", column="total_seats"),
-            @Result(property="hasAC", column="has_ac"),
-            @Result(property="hasWifi", column="has_wifi"),
-            @Result(property="imgUrl", column="img_url"),
-            @Result(property="description", column="description"),
-            @Result(property="createdAt", column="created_at"),
-            @Result(property="updatedAt", column="updated_at"),
-            @Result(property="driverId", column="driver_id"),
-            @Result(property="driverName", column="driver_name"),
-            @Result(property="driverEmployeeId", column="driver_employee_id"),
-            @Result(property="assistantId", column="assistant_id"),
-            @Result(property="assistantName", column="assistant_name"),
-            @Result(property="assistantEmployeeId", column="assistant_employee_id")
-    })
-    List<Bus> getAllBuses();
+//    @Select("SELECT * FROM bus")
+//    @Results({
+//            @Result(property="id", column="id"),
+//            @Result(property="busNumber", column="bus_number"),
+//            @Result(property="busType", column="bus_type"),
+//            @Result(property="totalSeats", column="total_seats"),
+//            @Result(property="hasAC", column="has_ac"),
+//            @Result(property="hasWifi", column="has_wifi"),
+//            @Result(property="imgUrl", column="img_url"),
+//            @Result(property="description", column="description"),
+//            @Result(property="createdAt", column="created_at"),
+//            @Result(property="updatedAt", column="updated_at"),
+//            @Result(property="driverId", column="driver_id"),
+//            @Result(property="driverName", column="driver_name"),
+//            @Result(property="driverEmployeeId", column="driver_employee_id"),
+//            @Result(property="assistantId", column="assistant_id"),
+//            @Result(property="assistantName", column="assistant_name"),
+//            @Result(property="assistantEmployeeId", column="assistant_employee_id")
+//    })
+//    List<Bus> getAllBuses();
 
     @Select("SELECT * FROM bus WHERE id = #{id}")
     @Results({
@@ -86,7 +87,61 @@ public interface BusMapper {
             @Param("assistantId") Long assistantId,
             @Param("date") LocalDate date);
 
+//////////////////////////////Get all Bus with nest Json//////////
+    @Select("""
+            SELECT 
+            b.id AS bus_id,
+            b.bus_number, 
+            b.bus_type, 
+            b.total_seats,
+            b.has_ac, 
+            b.has_wifi, 
+            b.img_url, 
+            b.description,
+            b.created_at,
+            b.updated_at,
+            
+            d.id AS driver_id,
+            d.name AS driver_name,
+            d.phone_number AS driver_phone_number,
+            d.license_number AS driver_license_number,
+            d.employee_id AS driver_employee_id,
+            
+            a.id AS assistant_id,
+            a.name AS assistant_name,
+            a.phone_number AS assistant_phone_number,
+            a.employee_id AS assistant_employee_id 
+            
+            FROM bus b
+            LEFT JOIN driver d ON b.driver_id = d.id
+            LEFT JOIN assistant a ON b.assistant_id = a.id;
+            """)
 
+    @Results({
+            @Result(property="id", column="bus_id"),
+            @Result(property="busNumber", column="bus_number"),
+            @Result(property="busType", column="bus_type"),
+            @Result(property="totalSeats", column="total_seats"),
+            @Result(property="hasAC", column="has_ac"),
+            @Result(property="hasWifi", column="has_wifi"),
+            @Result(property="imgUrl", column="img_url"),
+            @Result(property="description", column="description"),
+            @Result(property="createdAt", column="created_at"),
+            @Result(property="updatedAt", column="updated_at"),
 
+            //Nest mapping for driver
+            @Result(property = "driver.id", column = "driver_id"),
+            @Result(property = "driver.name", column = "driver_name"),
+            @Result(property = "driver.phoneNumber", column = "driver_phone_number"),
+            @Result(property = "driver.licenseNumber", column = "driver_license_number"),
+            @Result(property = "driver.employeeId", column = "driver_employee_id"),
+
+            //Nested mapping for assistant
+            @Result(property = "assistant.id", column = "assistant_id"),
+            @Result(property = "assistant.name", column = "assistant_name"),
+            @Result(property = "assistant.phoneNumber", column = "assistant_phone_number"),
+            @Result(property = "assistant.employeeId", column = "assistant_employee_id")
+    })
+    List<BusResponse> findAllBusResponse();
 
 }
