@@ -59,11 +59,11 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity,JwtAuthFilter jwtAuthFilter) throws Exception{
-        httpSecurity
+        httpSecurity.cors().and()
                 .csrf().disable()
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers("/").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/**").permitAll()
 
                         //Public endpoints
                         //Normal user endpoints
