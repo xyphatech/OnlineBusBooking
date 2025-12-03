@@ -4,6 +4,25 @@ spring:
     username: onlinebusdb_8pl8_user
     password: qhvau5oLkvSQcizA3VHMC5bvYIlSWK3x
 
+  profiles:
+    active: dev
+
+  jackson:
+    serialization:
+      indent_output: true
+
+server:
+  compression:
+    enabled: true
+    mime-types: application/json
+    min-response-size: 1024
+
+app:
+  pagination:
+    default-page: 0
+    default-size: 10
+    max-size: 100
+
   mail:
     host: smtp.gmail.com
     port: 587

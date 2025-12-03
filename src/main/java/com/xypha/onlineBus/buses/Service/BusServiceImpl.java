@@ -1,5 +1,7 @@
 package com.xypha.onlineBus.buses.Service;
 
+import com.xypha.onlineBus.api.ApiResponse;
+import com.xypha.onlineBus.api.PaginatedResponse;
 import com.xypha.onlineBus.buses.Dto.BusRequest;
 import com.xypha.onlineBus.buses.Dto.BusResponse;
 import com.xypha.onlineBus.buses.Entity.Bus;
@@ -36,36 +38,43 @@ public class BusServiceImpl implements BusService {
 
 
     //Pagination Part
-    public List<BusResponse> getBusPaginated(int page, int size){
+    public ApiResponse<PaginatedResponse<BusResponse>> getBusesPaginatedResponse(int page, int size) {
         int offset = page * size;
-        List<Bus> buses = busMapper.findPaginated(offset,size);
-        return buses.stream()
+        List<BusResponse> buses = busMapper.findPaginated(offset, size)
+                .stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
+
+        int total = busMapper.countBuses();
+        PaginatedResponse<BusResponse> paginatedResponse = new PaginatedResponse<>(offset, size, total, buses);
+        return new ApiResponse<>("SUCCESS","Buses retrieved successfully", paginatedResponse);
     }
+
+
+
     public int countBuses(){
         return busMapper.countBuses();
     }
 
 
-    public BusResponse addBus(BusRequest busRequest){
+    public ApiResponse<BusResponse> addBus(BusRequest busRequest){
+
         if(busMapper.existsByBusNumber(busRequest.getBusNumber()) > 0){
             throw new RuntimeException("Bus number already exists");
         }
         LocalDate today = LocalDate.now();
-        if (busRequest.getDriverId() != null){
+        if (busRequest.getDriverId() != null) {
             int driverCount = busMapper.countDriverAssignmentsForDate(busRequest.getDriverId(), today);
             if (driverCount > 0){
                 throw new RuntimeException("Driver is already assigned to another bus today");
             }
+        }
 
-            if (busRequest.getAssistantId() != null){
-                int assistantCount = busMapper.countAssistantAssignmentsForDate(busRequest.getAssistantId(), today);
-                if (assistantCount > 0){
-                    throw new RuntimeException("Assistant is already assigned to another bus today");
-                }
+        if (busRequest.getAssistantId() != null) {
+            int assistantCount = busMapper.countAssistantAssignmentsForDate(busRequest.getAssistantId(), today);
+            if (assistantCount > 0){
+                throw new RuntimeException("Assistant is already assigned to another bus today");
             }
-
         }
 
         Bus bus = new Bus();
@@ -80,20 +89,22 @@ public class BusServiceImpl implements BusService {
         bus.setAssistantId(busRequest.getAssistantId());
 
         busMapper.insertBus(bus);
-        return mapToResponse(bus);
+        return new ApiResponse<>("SUCCESS","Bus added successfully", mapToResponse(bus));
     }
 
-    public BusResponse getBusById(Long id){
-        Bus bus = busMapper.getBusById(id);
-        if(bus == null) throw new RuntimeException("Bus not found");
-        return mapToResponse(bus);
-    }
+   public ApiResponse<BusResponse> getBusResponseById(Long id){
+      Bus bus = busMapper.getBusById(id);
+      if (bus == null) throw new RuntimeException("Bus not found with id: " + id);
+
+      BusResponse busResponse = mapToResponse(bus);
+      return new ApiResponse<>("SUCCESS", "Bus retrieved successfully", busResponse);
+   }
 
     public List<BusResponse> getAllBuses(){
         return busMapper.findAllBusResponse();
     }
 
-    public BusResponse updateBus(Long id, BusRequest busRequest){
+    public ApiResponse<BusResponse> updateBus(Long id, BusRequest busRequest){
         Bus bus = busMapper.getBusById(id);
         if (bus == null) throw new RuntimeException("Bus not found");
 
@@ -105,15 +116,16 @@ public class BusServiceImpl implements BusService {
         bus.setImgUrl(busRequest.getImgUrl());
         bus.setDescription(busRequest.getDescription());
         bus.setDriverId(busRequest.getDriverId());
-        bus.setAssistantId(bus.getAssistantId());
+        bus.setAssistantId(busRequest.getAssistantId());
 
         busMapper.updateBus(bus);
-        return mapToResponse(bus);
+        return new ApiResponse<>("SUCCESS", "Bus updated successfully", mapToResponse(bus));
     }
 
-    public void deleteBus(Long id){
-        busMapper.deleteBus(id);
-    }
+    public ApiResponse<Void> deleteBus(Long id){
+      busMapper.deleteBus(id);
+        return new ApiResponse<>("SUCCESS", "Bus deleted successfully", null);
+  }
 
 
     //Convert Bus -> BusResponse
